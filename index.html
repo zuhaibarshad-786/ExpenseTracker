@@ -6,52 +6,225 @@
   <title>Elegant Expense Tracker</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    .card {
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.85);
+      border-radius: 12px;
+      border: 1px solid rgba(209, 213, 219, 0.3);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
+    }
+    
+    .btn-warning {
+      background: linear-gradient(135deg, #ffb347 0%, #ffcc33 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 179, 71, 0.4);
+    }
+    
+    .table-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .table-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .table-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 10px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    
+    .input-field {
+      transition: all 0.3s ease;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .input-field:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+    
+    .category-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      background-color: #e0e7ff;
+      color: #4f46e5;
+    }
+    
+    .compact-chart {
+      max-height: 250px !important;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-r from-blue-400 to-teal-300 min-h-screen flex items-center justify-center p-4">
-  <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-4xl">
-    <h1 class="text-2xl font-bold text-center text-gray-700 mb-4">Elegant Expense Tracker</h1>
-
-    <form id="expense-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <input type="text" id="title" placeholder="Expense Title" required class="border p-2 rounded w-full" />
-      <input type="number" id="amount" placeholder="Amount" required min="0" class="border p-2 rounded w-full" />
-      <input type="text" id="category" placeholder="Category" required class="border p-2 rounded w-full" />
-      <input type="date" id="date" required class="border p-2 rounded w-full" />
-      <textarea id="notes" placeholder="Notes (optional)" class="border p-2 rounded w-full md:col-span-2"></textarea>
-      <button type="submit" class="md:col-span-2 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">Add Expense</button>
-    </form>
-
-    <h2 class="text-xl font-semibold text-gray-700 mb-2">Summary</h2>
-    <div id="summary" class="bg-blue-50 p-4 rounded mb-4"></div>
-    <canvas id="expenseChart" class="mb-6"></canvas>
-
-    <h2 class="text-xl font-semibold text-gray-700 mb-2">All Expenses</h2>
-    <div class="flex flex-col md:flex-row gap-4 mb-4">
-      <input type="text" id="filter-category" placeholder="Filter by Category" class="border p-2 rounded w-full md:w-1/2" />
-      <input type="date" id="filter-date" class="border p-2 rounded w-full md:w-1/2" />
+<body class="min-h-screen p-4 md:p-6">
+  <div class="card p-6 w-full max-w-6xl mx-auto shadow-xl">
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- Left Column - Form -->
+      <div class="md:w-1/3">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center md:text-left">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+            Elegant Expense Tracker
+          </span>
+        </h1>
+        
+        <form id="expense-form" class="space-y-4">
+          <div>
+            <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <input type="text" id="title" placeholder="Dinner with friends" required 
+                   class="input-field w-full p-3 rounded-lg focus:outline-none">
+          </div>
+          
+          <div>
+            <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Amount ($)</label>
+            <input type="number" id="amount" placeholder="0.00" required min="0" step="0.01"
+                   class="input-field w-full p-3 rounded-lg focus:outline-none">
+          </div>
+          
+          <div>
+            <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select id="category" required 
+                    class="input-field w-full p-3 rounded-lg focus:outline-none">
+              <option value="">Select a category</option>
+              <option value="Food">Food</option>
+              <option value="Transport">Transport</option>
+              <option value="Housing">Housing</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Health">Health</option>
+              <option value="Education">Education</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div>
+            <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <input type="date" id="date" required 
+                   class="input-field w-full p-3 rounded-lg focus:outline-none">
+          </div>
+          
+          <div>
+            <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+            <textarea id="notes" placeholder="Any additional details..." 
+                      class="input-field w-full p-3 rounded-lg focus:outline-none h-20"></textarea>
+          </div>
+          
+          <button type="submit" 
+                  class="btn-primary w-full py-3 px-4 rounded-lg text-white font-medium focus:outline-none">
+            Add Expense
+          </button>
+        </form>
+        
+        <div class="mt-8">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Summary</h2>
+          <div id="summary" class="bg-gray-50 p-4 rounded-lg"></div>
+        </div>
+      </div>
+      
+      <!-- Right Column - Chart and Table -->
+      <div class="md:w-2/3 space-y-6">
+        <div class="compact-chart">
+          <canvas id="expenseChart"></canvas>
+        </div>
+        
+        <div>
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
+            <h2 class="text-xl font-semibold text-gray-800">All Expenses</h2>
+            <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+              <input type="text" id="filter-category" placeholder="Filter by category" 
+                     class="input-field p-2 rounded-lg focus:outline-none w-full">
+              <input type="date" id="filter-date" 
+                     class="input-field p-2 rounded-lg focus:outline-none w-full">
+            </div>
+          </div>
+          
+          <div class="table-container">
+            <table class="w-full text-left border-collapse">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="p-3 text-sm font-semibold text-gray-700">Title</th>
+                  <th class="p-3 text-sm font-semibold text-gray-700">Amount</th>
+                  <th class="p-3 text-sm font-semibold text-gray-700">Category</th>
+                  <th class="p-3 text-sm font-semibold text-gray-700 hidden md:table-cell">Date</th>
+                  <th class="p-3 text-sm font-semibold text-gray-700 hidden md:table-cell">Notes</th>
+                  <th class="p-3 text-sm font-semibold text-gray-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="expense-table-body" class="divide-y divide-gray-200"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
-    <table class="table-auto w-full text-center border-collapse">
-      <thead class="bg-blue-500 text-white">
-        <tr>
-          <th class="border p-2">Title</th>
-          <th class="border p-2">Amount ($)</th>
-          <th class="border p-2">Category</th>
-          <th class="border p-2">Date</th>
-          <th class="border p-2">Notes</th>
-          <th class="border p-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="expense-table-body" class="bg-blue-50"></tbody>
-    </table>
   </div>
 
   <script>
     let expenses = [];
     let chart;
 
+    // Initialize with today's date
+    document.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('date').value = today;
+    });
+
     document.getElementById('expense-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const amount = parseFloat(document.getElementById('amount').value);
       if(amount < 0) return alert("Amount cannot be negative!");
+      
       const exp = {
         id: Date.now(),
         title: document.getElementById('title').value,
@@ -60,11 +233,25 @@
         date: document.getElementById('date').value,
         notes: document.getElementById('notes').value
       };
+      
       expenses.push(exp);
       saveExpenses();
       displayExpenses();
       displaySummary();
+      
+      // Reset form but keep category and date
+      const category = document.getElementById('category').value;
+      const date = document.getElementById('date').value;
       this.reset();
+      document.getElementById('category').value = category;
+      document.getElementById('date').value = date;
+      
+      // Show success animation
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.textContent = '✓ Added!';
+      setTimeout(() => {
+        submitBtn.textContent = 'Add Expense';
+      }, 1500);
     });
 
     document.getElementById('filter-category').addEventListener('input', displayExpenses);
@@ -82,6 +269,7 @@
     function displayExpenses() {
       const tbody = document.getElementById('expense-table-body');
       tbody.innerHTML = '';
+      
       let filtered = [...expenses];
       const catFilter = document.getElementById('filter-category').value.toLowerCase();
       const dateFilter = document.getElementById('filter-date').value;
@@ -91,27 +279,48 @@
 
       filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
 
-      filtered.forEach(exp => {
+      if(filtered.length === 0) {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td class='border p-2'>${exp.title}</td>
-          <td class='border p-2'>${exp.amount.toFixed(2)}</td>
-          <td class='border p-2'>${exp.category}</td>
-          <td class='border p-2'>${exp.date}</td>
-          <td class='border p-2'>${exp.notes || 'None'}</td>
-          <td class='border p-2'>
-            <button onclick="editExpense(${exp.id})" class="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500">Edit</button>
-            <button onclick="deleteExpense(${exp.id})" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</button>
+          <td colspan="6" class="p-4 text-center text-gray-500">
+            No expenses found. Add your first expense!
+          </td>`;
+        tbody.appendChild(row);
+        return;
+      }
+
+      filtered.forEach(exp => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50 fade-in';
+        row.innerHTML = `
+          <td class="p-3 text-sm font-medium text-gray-800">${exp.title}</td>
+          <td class="p-3 text-sm font-semibold text-gray-800">$${exp.amount.toFixed(2)}</td>
+          <td class="p-3 text-sm"><span class="category-chip">${exp.category}</span></td>
+          <td class="p-3 text-sm text-gray-600 hidden md:table-cell">${formatDate(exp.date)}</td>
+          <td class="p-3 text-sm text-gray-600 hidden md:table-cell">${exp.notes || '-'}</td>
+          <td class="p-3 text-sm">
+            <div class="flex gap-2">
+              <button onclick="editExpense(${exp.id})" 
+                      class="btn-warning text-white px-3 py-1 rounded-lg text-xs font-medium">
+                Edit
+              </button>
+              <button onclick="deleteExpense(${exp.id})" 
+                      class="btn-danger text-white px-3 py-1 rounded-lg text-xs font-medium">
+                Delete
+              </button>
+            </div>
           </td>`;
         tbody.appendChild(row);
       });
     }
 
     function deleteExpense(id){
-      expenses = expenses.filter(e => e.id !== id);
-      saveExpenses();
-      displayExpenses();
-      displaySummary();
+      if(confirm("Are you sure you want to delete this expense?")) {
+        expenses = expenses.filter(e => e.id !== id);
+        saveExpenses();
+        displayExpenses();
+        displaySummary();
+      }
     }
 
     function editExpense(id){
@@ -121,6 +330,11 @@
       document.getElementById('category').value = exp.category;
       document.getElementById('date').value = exp.date;
       document.getElementById('notes').value = exp.notes;
+      
+      // Scroll to form
+      document.getElementById('expense-form').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('title').focus();
+      
       deleteExpense(id);
     }
 
@@ -131,29 +345,102 @@
         total += e.amount;
         summary[e.category] = (summary[e.category] || 0) + e.amount;
       });
+      
       const summaryDiv = document.getElementById('summary');
-      summaryDiv.innerHTML = `Total Spent: $${total.toFixed(2)}<br>`;
-      for (const [cat, amt] of Object.entries(summary)) {
-        summaryDiv.innerHTML += `${cat}: $${amt.toFixed(2)}<br>`;
-      }
+      summaryDiv.innerHTML = `
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-blue-50 p-3 rounded-lg">
+            <p class="text-xs text-blue-600">Total Expenses</p>
+            <p class="text-lg font-bold text-blue-800">$${total.toFixed(2)}</p>
+          </div>
+          <div class="bg-purple-50 p-3 rounded-lg">
+            <p class="text-xs text-purple-600">Categories</p>
+            <p class="text-lg font-bold text-purple-800">${Object.keys(summary).length}</p>
+          </div>
+          <div class="bg-green-50 p-3 rounded-lg">
+            <p class="text-xs text-green-600">Transactions</p>
+            <p class="text-lg font-bold text-green-800">${expenses.length}</p>
+          </div>
+        </div>`;
+      
       drawChart(summary);
     }
 
     function drawChart(summary){
       const ctx = document.getElementById('expenseChart').getContext('2d');
       if(chart) chart.destroy();
+      
+      // Prepare data - limit to top 5 categories, group others as "Other"
+      const categories = Object.keys(summary);
+      const amounts = Object.values(summary);
+      
+      let chartLabels, chartData;
+      
+      if(categories.length > 5) {
+        // Sort by amount descending
+        const sorted = categories.map((cat, i) => ({cat, amt: amounts[i]}))
+                                .sort((a,b) => b.amt - a.amt);
+        
+        const top5 = sorted.slice(0, 5);
+        const others = sorted.slice(5).reduce((sum, item) => sum + item.amt, 0);
+        
+        chartLabels = [...top5.map(item => item.cat), 'Other'];
+        chartData = [...top5.map(item => item.amt), others];
+      } else {
+        chartLabels = categories;
+        chartData = amounts;
+      }
+      
       chart = new Chart(ctx, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
-          labels: Object.keys(summary),
+          labels: chartLabels,
           datasets: [{
-            data: Object.values(summary),
-            backgroundColor: Object.keys(summary).map((_,i)=>`hsl(${i*60},70%,60%)`)
+            data: chartData,
+            backgroundColor: [
+              '#6366F1', '#8B5CF6', '#EC4899', '#F43F5E', 
+              '#F97316', '#F59E0B', '#10B981', '#3B82F6'
+            ],
+            borderWidth: 0
           }]
         },
-        options: {responsive:true, plugins:{legend:{position:'bottom'}}}
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                padding: 20,
+                font: {
+                  size: 11
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = Math.round((value / total) * 100);
+                  return `${label}: $${value.toFixed(2)} (${percentage}%)`;
+                }
+              }
+            }
+          },
+          cutout: '70%'
+        }
       });
     }
+    
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('en-US', options);
+    }
+
+    // Initialize
     loadExpenses();
     displayExpenses();
     displaySummary();
